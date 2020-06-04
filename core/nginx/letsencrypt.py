@@ -2,8 +2,6 @@
 
 import os
 import time
-import subprocess
-
 
 command = [
     "certbot",
@@ -12,18 +10,12 @@ command = [
     "-m", "{}@{}".format(os.environ["POSTMASTER"], os.environ["DOMAIN"]),
     "certonly", "--standalone",
     "--cert-name", "mailu",
-    "--preferred-challenges", "http", "--http-01-port", "8008",
+    "--preferred-challenges", "http",
     "--keep-until-expiring",
     "--rsa-key-size", "4096",
-    "--config-dir", "/certs/letsencrypt",
-    "--post-hook", "/config.py"
+    "--config-dir", "/certs/letsencrypt"
 ]
 
-# Wait for nginx to start
-time.sleep(5)
-
-# Run certbot every hour
-while True:
-    subprocess.call(command)
-    time.sleep(3600)
+# Run certbot once
+os.system(" ".join(command))
 
