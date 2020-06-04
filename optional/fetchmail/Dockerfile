@@ -27,6 +27,9 @@ COPY --from=builder /fetchmail-7.0.0-alpha6/fetchmail /usr/local/bin
 COPY fetchmail.py /fetchmail.py
 
 RUN adduser -D fetchmail
+RUN install -o fetchmail -g fetchmail -m 775 -d /run/fetchmail
 USER fetchmail
 
 CMD ["/fetchmail.py"]
+
+HEALTHCHECK --interval=70s --timeout=10s --start-period=60s --retries=3 CMD test -f /run/fetchmail/fetchmail-dispatcher.pid && test `stat -c '%Y' /run/fetchmail/fetchmail-dispatcher.pid` -ge $(( `date +%s` - 600 )) && echo alive || exit 1

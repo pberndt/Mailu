@@ -26,6 +26,12 @@ poll "{host}" proto {protocol}  port {port}
     {options}
 """
 
+PID_FILE = '/run/fetchmail/fetchmail-dispatcher.pid'
+
+def write_pid_file():
+    f = open(PID_FILE, 'w')
+    f.write(str(os.getpid()))
+    f.close()
 
 def extract_host_port(host_and_port, default_port):
     host, port = re.match('^(.*?)(?::([0-9]*))?$', host_and_port).groups()
@@ -93,7 +99,9 @@ def run(debug):
 
 
 if __name__ == "__main__":
+    write_pid_file()
     while True:
+        os.utime(PID_FILE, None)
         time.sleep(int(os.environ.get("FETCHMAIL_DELAY", 60)))
         run(os.environ.get("DEBUG", None) == "True")
         sys.stdout.flush()
