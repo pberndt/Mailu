@@ -17,7 +17,7 @@ RUN mkdir static \
 FROM $DISTRO
 # python3 shared with most images
 RUN apk add --no-cache \
-    python3 py3-pip git bash \
+    python3 py3-pip git tini bash \
   && pip3 install --upgrade pip
 
 RUN mkdir -p /app
@@ -41,6 +41,7 @@ EXPOSE 80/tcp
 VOLUME ["/data","/dkim"]
 ENV FLASK_APP mailu
 
+ENTRYPOINT ["/sbin/tini", "-g", "-vv", "--"]
 CMD /start.py
 
 HEALTHCHECK CMD curl -f -L http://localhost/ui/login?next=ui.index || exit 1

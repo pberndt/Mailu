@@ -2,7 +2,7 @@ ARG DISTRO=alpine:3.10
 FROM $DISTRO
 # python3 shared with most images
 RUN apk add --no-cache \
-    python3 py3-pip git bash py3-multidict \
+    python3 py3-pip git tini bash py3-multidict \
   && pip3 install --upgrade pip
 
 # Shared layer between nginx, dovecot, postfix, postgresql, rspamd, unbound, rainloop, roundcube
@@ -20,6 +20,7 @@ EXPOSE 80/tcp 443/tcp 110/tcp 143/tcp 465/tcp 587/tcp 993/tcp 995/tcp 25/tcp 100
 VOLUME ["/certs"]
 VOLUME ["/overrides"]
 
+ENTRYPOINT ["/sbin/tini", "-g", "-vv", "--"]
 CMD /start.py
 
 HEALTHCHECK CMD curl -k -f -L http://localhost/health || exit 1
