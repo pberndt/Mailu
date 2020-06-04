@@ -32,6 +32,12 @@ else:
     exit(1)
 
 
+os.system("mysql -u%s --password=%s -h%s %s" % (
+        os.environ.get("ROUNDCUBE_DB_USER","roundcube"),
+        os.environ.get("ROUNDCUBE_DB_PW"),
+        os.environ.get("ROUNDCUBE_DB_HOST",os.environ.get("DB_HOST","database")),
+        os.environ.get("ROUNDCUBE_DB_NAME","roundcube")
+        ))
 
 conf.jinja("/php.ini", os.environ, "/usr/local/etc/php/conf.d/roundcube.ini")
 

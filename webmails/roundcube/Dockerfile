@@ -47,3 +47,7 @@ VOLUME ["/data"]
 CMD /start.py
 
 HEALTHCHECK CMD curl -f -L http://localhost/ || exit 1
+
+RUN apt-get update && apt-get install -y \
+      mariadb-client iproute2 \
+ && rm -rf /var/lib/apt/lists
