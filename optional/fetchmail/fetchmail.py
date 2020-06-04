@@ -10,6 +10,7 @@ import requests
 import sys
 import traceback
 
+from socrate import system
 
 FETCHMAIL = """
 fetchmail -N \
@@ -26,6 +27,7 @@ poll "{host}" proto {protocol}  port {port}
     {options}
 """
 
+os.environ["ADMIN_ADDRESS"] = system.get_host_address_from_environment("ADMIN", "admin")
 PID_FILE = '/run/fetchmail/fetchmail-dispatcher.pid'
 
 def write_pid_file():
@@ -53,7 +55,8 @@ def fetchmail(fetchmailrc):
 
 def run(debug):
     try:
-        fetches = requests.get("http://admin/internal/fetch").json()
+        url = "http://" + os.environ["ADMIN_ADDRESS"] + "/internal/fetch"
+        fetches = requests.get(url).json()
         smtphost, smtpport = extract_host_port(os.environ.get("HOST_SMTP", "smtp"), None)
         if smtpport is None:
             smtphostport = smtphost
@@ -91,7 +94,8 @@ def run(debug):
                         user_info in error_message):
                     print(error_message)
             finally:
-                requests.post("http://admin/internal/fetch/{}".format(fetch["id"]),
+                url = "http://{}/internal/fetch/{}".format(os.environ["ADMIN_ADDRESS"],fetch["id"])
+                requests.post(url,
                     json=error_message.split("\n")[0]
                 )
     except Exception:

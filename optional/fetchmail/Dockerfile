@@ -13,11 +13,13 @@ RUN cd fetchmail-7.0.0-alpha6 && \
 
 ARG DISTRO=alpine:3.10
 FROM $DISTRO
-
 # python3 shared with most images
 RUN apk add --no-cache \
-    python3 py3-pip bash \
+    python3 py3-pip git bash py3-multidict \
   && pip3 install --upgrade pip
+
+# Shared layer between nginx, dovecot, postfix, postgresql, rspamd, unbound, rainloop, roundcube
+RUN pip3 install socrate
 
 # Image specific layers under this line
 RUN apk add --no-cache ca-certificates openssl \
